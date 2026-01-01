@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Daily Routine Tracker – Real Life Project</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #020617;
+      --card: rgba(15, 23, 42, 0.96);
+      --muted: #9ca3af;
+      --text: #e5e7eb;
+      --border: rgba(148, 163, 184, 0.4);
+      --accent: #22c55e;
+      --accent-2: #3b82f6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,0.14), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(52,211,153,0.18), transparent 55%),
+        linear-gradient(180deg,#020617 0,#020617 100%);
+      color: var(--text);
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(90deg, rgba(15,23,42,0.94), rgba(15,23,42,0.86));
+      border-bottom: 1px solid rgba(148,163,184,0.3);
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 20px 10px;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(148,163,184,0.3);
+    }
+    .nav-btn {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      border-bottom: 2px solid transparent;
+      transition: all .2s ease;
+    }
+    .nav-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .nav-btn:hover {
+      color: var(--text);
+    }
+    h1 {
+      margin: 4px 0 2px;
+      font-size: clamp(24px,4vw,32px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: .03em;
+    }
+    h1 span.emoji { font-size: 26px; }
+    .sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 2px 0 6px;
+    }
+    .top-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+    .datetime-display {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 6px 10px;
+      border-radius: 12px;
+      background: rgba(15,23,42,0.92);
+      border: 1px solid rgba(148,163,184,0.4);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .datetime-main {
+      font-size: 13px;
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+    .time-text {
+      font-variant-numeric: tabular-nums;
+      color: #bfdbfe;
+    }
+    .date-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.92);
+      border: 1px solid rgba(148,163,184,0.4);
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .date-selector input[type="date"] {
+      background: transparent;
+      border: none;
+      color: #e5e7eb;
+      font-size: 11px;
+      outline: none;
+    }
+    .quote {
+      font-size: 11px;
+      color: #a5b4fc;
+      margin-top: 4px;
+    }
+    .grid {
+      display: grid;
+      gap: 16px;
+      padding: 18px 0 20px;
+      grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+    }
+    .card {
+      border: 1px solid rgba(148,163,184,0.4);
+      background:
+        radial-gradient(circle at top left, rgba(59,130,246,0.18), transparent 60%),
+        radial-gradient(circle at bottom right, rgba(34,197,94,0.18), transparent 60%),
+        var(--card);
+      border-radius: 18px;
+      padding: 14px 13px 12px;
+      box-shadow: 0 18px 40px rgba(15,23,42,0.8);
+      position: relative;
+      overflow: hidden;
+    }
+    .card-inner { position: relative; z-index: 1; }
+    .day-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .day-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .day-title span.icon { font-size: 18px; }
+    .day-label {
+      font-size: 11px;
+      color: #c4b5fd;
+      margin-top: 1px;
+    }
+    .badge {
+      padding: 4px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .day-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .day-actions-left {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .add-main-btn {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(34,197,94,0.8);
+      background: rgba(22,163,74,0.08);
+      color: #bbf7d0;
+      font-size: 11px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .add-main-btn:hover {
+      background: rgba(22,163,74,0.16);
+    }
+    .day-progress {
+      width: 100%;
+      margin: 4px 0 4px;
+    }
+    .bar {
+      width: 100%;
+      height: 10px;
+      background: rgba(15,23,42,0.95);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+    .fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg,var(--accent),var(--accent-2));
+      transition: width .25s ease;
+    }
+    .day-pct-text {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .time-chip {
+      font-size: 10px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      color: #bfdbfe;
+      background: rgba(15,23,42,0.9);
+    }
+    details {
+      border-radius: 12px;
+      padding: 8px 8px;
+      background: rgba(15,23,42,0.9);
+      border: 1px dashed rgba(148,163,184,0.55);
+      margin-top: 8px;
+    }
+    summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    summary::-webkit-details-marker { display: none; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+    }
+    .section-header span.icon { font-size: 14px; }
+
+    .topic {
+      margin-top: 7px;
+      padding: 8px 9px;
+      border-radius: 12px;
+      background: rgba(15,23,42,0.98);
+      border: 1px solid rgba(148,163,184,0.55);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all .2s ease;
+    }
+    .topic:hover {
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.25);
+    }
+    .topic-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .topic-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: flex-end;
+    }
+    .delete-btn {
+      background: rgba(239,68,68,0.15);
+      border: 1px solid rgba(239,68,68,0.5);
+      color: #fca5a5;
+      border-radius: 999px;
+      padding: 2px 6px;
+      font-size: 10px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background: rgba(239,68,68,0.3);
+    }
+    input[type="checkbox"] {
+      flex-shrink: 0;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      border: 1.8px solid rgba(148,163,184,0.9);
+      display: inline-grid;
+      place-content: center;
+      background: #020617;
+    }
+    input[type="checkbox"]::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      transform: scale(0);
+      transition: .12s transform ease-in-out;
+      clip-path: polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0,43% 62%);
+      background: linear-gradient(45deg,var(--accent),var(--accent-2));
+      border-radius: 2px;
+    }
+    input[type="checkbox"]:checked {
+      border-color: var(--accent);
+      background: radial-gradient(circle at top left,rgba(34,197,94,0.25),#020617);
+    }
+    input[type="checkbox"]:checked::before { transform: scale(1); }
+    .topic-label {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 13px;
+      width: 100%;
+    }
+    .task-title {
+      font-size: 13px;
+      font-weight: 500;
+      padding: 2px 4px;
+      border-radius: 4px;
+      cursor: text;
+    }
+    .task-title:hover {
+      background: rgba(34,197,94,0.1);
+    }
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .print-tip {
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 16px;
+      background: rgba(34,197,94,0.08);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(34,197,94,0.3);
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+    
+    .history-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      padding: 18px 0 20px;
+    }
+    
+    .history-card {
+      border: 1px solid rgba(148,163,184,0.4);
+      background: 
+        radial-gradient(circle at top left, rgba(59,130,246,0.12), transparent 60%),
+        var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.6);
+    }
+    
+    .history-date {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    
+    .history-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .stat-box {
+      background: rgba(22,163,74,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    .stat-label {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    
+    .no-data {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+    
+    .no-data-emoji {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    .overview-stats {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      margin-bottom: 24px;
+    }
+    
+    .overview-card {
+      background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(59,130,246,0.15));
+      border: 1px solid rgba(148,163,184,0.4);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+    }
+    
+    .overview-card h3 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    .overview-card p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    footer {
+      border-top: 1px solid rgba(148,163,184,0.3);
+      padding: 14px 20px 18px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+    @media (max-width: 768px) {
+      .wrap { padding: 10px; }
+      .grid { grid-template-columns: 1fr; }
+      .history-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1><span class="emoji">🧭</span> Daily Routine Tracker</h1>
+    <p class="sub">Real‑life daily schedule with live date & time – track & review your habits</p>
+    
+    <div class="nav-tabs">
+      <button class="nav-btn active" data-page="planner">📅 Planner</button>
+      <button class="nav-btn" data-page="history">📊 History & Analytics</button>
+    </div>
+
+    <div class="top-row">
+      <div class="datetime-display">
+        <div class="datetime-main" id="datetime-main">Loading date…</div>
+        <div class="time-text" id="time-text">--:--:--</div>
+      </div>
+      <div class="date-selector" id="date-selector-container">
+        <span>Plan for date:</span>
+        <input type="date" id="plan-date">
+      </div>
+    </div>
+
+    <p class="quote">"A strong future starts with one well‑planned day."</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="planner" class="page active">
+    <div class="grid">
+      <section class="card" data-day="Morning">
+        <div class="card-inner">
+          <div class="day-head">
+            <div>
+              <div class="day-title"><span class="icon">🌅</span><span>Morning</span></div>
+              <div class="day-label" id="label-morning">Morning routine</div>
+            </div>
+            <span class="badge"><span id="morning-count">0</span> tasks</span>
+          </div>
+          <div class="day-actions">
+            <div class="day-actions-left">✏️ Click tasks to edit • ➕ Add custom task</div>
+            <button class="add-main-btn" data-add="Morning">➕ Add task</button>
+          </div>
+          <div class="day-progress">
+            <div class="bar"><div class="fill" id="morning-fill"></div></div>
+            <div class="day-pct-text">
+              <span id="morning-pct">0% complete</span>
+              <span class="time-chip">5:30 AM – 10:00 AM</span>
+            </div>
+          </div>
+          <details open>
+            <summary><span class="section-header"><span class="icon">🧘‍♂️</span><span>Start of the day</span></span></summary>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="m1">
+                <label class="topic-label" for="m1">
+                  <div class="task-title">Wake up, make bed, drink water</div>
+                  <div class="hint">Keep mobile away and open window for fresh air.</div>
+                </label>
+              </div>
+            </div>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="m2">
+                <label class="topic-label" for="m2">
+                  <div class="task-title">10–15 min walking / stretching</div>
+                  <div class="hint">Short walk near home or simple stretches.</div>
+                </label>
+              </div>
+            </div>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="m3">
+                <label class="topic-label" for="m3">
+                  <div class="task-title">Freshen up and 5‑min calm breathing</div>
+                  <div class="hint">Sit quietly or do simple breathing/prayer.</div>
+                </label>
+              </div>
+            </div>
+          </details>
+          <details>
+            <summary><span class="section-header"><span class="icon">🍳</span><span>Breakfast & planning</span></span></summary>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="m4">
+                <label class="topic-label" for="m4">
+                  <div class="task-title">Eat a simple, peaceful breakfast</div>
+                  <div class="hint">Focus on food, avoid TV/phone while eating.</div>
+                </label>
+              </div>
+            </div>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="m5">
+                <label class="topic-label" for="m5">
+                  <div class="task-title">Write today's 3 important tasks</div>
+                  <div class="hint">Decide what you want to finish by tonight.</div>
+                </label>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="card" data-day="Afternoon">
+        <div class="card-inner">
+          <div class="day-head">
+            <div>
+              <div class="day-title"><span class="icon">🌤️</span><span>Afternoon</span></div>
+              <div class="day-label" id="label-afternoon">Afternoon routine</div>
+            </div>
+            <span class="badge"><span id="afternoon-count">0</span> tasks</span>
+          </div>
+          <div class="day-actions">
+            <div class="day-actions-left">✏️ Click tasks to edit • ➕ Add custom task</div>
+            <button class="add-main-btn" data-add="Afternoon">➕ Add task</button>
+          </div>
+          <div class="day-progress">
+            <div class="bar"><div class="fill" id="afternoon-fill"></div></div>
+            <div class="day-pct-text">
+              <span id="afternoon-pct">0% complete</span>
+              <span class="time-chip">10:00 AM – 4:00 PM</span>
+            </div>
+          </div>
+          <details open>
+            <summary><span class="section-header"><span class="icon">📚</span><span>Work / study / chores</span></span></summary>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="a1">
+                <label class="topic-label" for="a1">
+                  <div class="task-title">1–2 hours focused work / study</div>
+                  <div class="hint">Any important work: office, college, home tasks.</div>
+                </label>
+              </div>
+            </div>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="a2">
+                <label class="topic-label" for="a2">
+                  <div class="task-title">Short walking and water break</div>
+                  <div class="hint">Stand up, walk around, drink some water.</div>
+                </label>
+              </div>
+            </div>
+          </details>
+          <details>
+            <summary><span class="section-header"><span class="icon">🥗</span><span>Lunch & small rest</span></span></summary>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="a3">
+                <label class="topic-label" for="a3">
+                  <div class="task-title">Have lunch on time</div>
+                  <div class="hint">Balanced food, slow eating, enough water.</div>
+                </label>
+              </div>
+            </div>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="a4">
+                <label class="topic-label" for="a4">
+                  <div class="task-title">10–15 min rest / power nap</div>
+                  <div class="hint">Lie down or sit quietly without scrolling.</div>
+                </label>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="card" data-day="Evening">
+        <div class="card-inner">
+          <div class="day-head">
+            <div>
+              <div class="day-title"><span class="icon">🌇</span><span>Evening</span></div>
+              <div class="day-label" id="label-evening">Evening routine</div>
+            </div>
+            <span class="badge"><span id="evening-count">0</span> tasks</span>
+          </div>
+          <div class="day-actions">
+            <div class="day-actions-left">✏️ Click tasks to edit • ➕ Add custom task</div>
+            <button class="add-main-btn" data-add="Evening">➕ Add task</button>
+          </div>
+          <div class="day-progress">
+            <div class="bar"><div class="fill" id="evening-fill"></div></div>
+            <div class="day-pct-text">
+              <span id="evening-pct">0% complete</span>
+              <span class="time-chip">4:00 PM – 8:30 PM</span>
+            </div>
+          </div>
+          <details open>
+            <summary><span class="section-header"><span class="icon">🚶‍♂️</span><span>Movement & outside time</span></span></summary>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="e1">
+                <label class="topic-label" for="e1">
+                  <div class="task-title">20–30 min evening walk</div>
+                  <div class="hint">Walk near home or terrace; enjoy fresh air.</div>
+                </label>
+              </div>
+            </div>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="e2">
+                <label class="topic-label" for="e2">
+                  <div class="task-title">Light physical activity (skipping / games)</div>
+                  <div class="hint">Any fun movement – not too heavy.</div>
+                </label>
+              </div>
+            </div>
+          </details>
+          <details>
+            <summary><span class="section-header"><span class="icon">📖</span><span>Reading & family time</span></span></summary>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="e3">
+                <label class="topic-label" for="e3">
+                  <div class="task-title">20–30 min reading (book / newspaper)</div>
+                  <div class="hint">Sit comfortably and read without distractions.</div>
+                </label>
+              </div>
+            </div>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="e4">
+                <label class="topic-label" for="e4">
+                  <div class="task-title">Talk with family / friends</div>
+                  <div class="hint">Share how your day went, listen to others.</div>
+                </label>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="card" data-day="Night">
+        <div class="card-inner">
+          <div class="day-head">
+            <div>
+              <div class="day-title"><span class="icon">🌙</span><span>Night</span></div>
+              <div class="day-label" id="label-night">Night routine</div>
+            </div>
+            <span class="badge"><span id="night-count">0</span> tasks</span>
+          </div>
+          <div class="day-actions">
+            <div class="day-actions-left">✏️ Click tasks to edit • ➕ Add custom task</div>
+            <button class="add-main-btn" data-add="Night">➕ Add task</button>
+          </div>
+          <div class="day-progress">
+            <div class="bar"><div class="fill" id="night-fill"></div></div>
+            <div class="day-pct-text">
+              <span id="night-pct">0% complete</span>
+              <span class="time-chip">8:30 PM – Sleep</span>
+            </div>
+          </div>
+          <details open>
+            <summary><span class="section-header"><span class="icon">🍽️</span><span>Dinner & slow down</span></span></summary>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="n1">
+                <label class="topic-label" for="n1">
+                  <div class="task-title">Have light dinner on time</div>
+                  <div class="hint">Avoid very heavy food late at night.</div>
+                </label>
+              </div>
+            </div>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="n2">
+                <label class="topic-label" for="n2">
+                  <div class="task-title">Turn off screens 30 min before bed</div>
+                  <div class="hint">Keep phone away from bed, no late scrolling.</div>
+                </label>
+              </div>
+            </div>
+          </details>
+          <details>
+            <summary><span class="section-header"><span class="icon">🛏️</span><span>Sleep & reflection</span></span></summary>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="n3">
+                <label class="topic-label" for="n3">
+                  <div class="task-title">Write 2–3 good things from today</div>
+                  <div class="hint">Short reflection to end the day positively.</div>
+                </label>
+              </div>
+            </div>
+            <div class="topic">
+              <div class="topic-row">
+                <input type="checkbox" id="n4">
+                <label class="topic-label" for="n4">
+                  <div class="task-title">Sleep at a fixed time</div>
+                  <div class="hint">Try to sleep at the same time every night.</div>
+                </label>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+    </div>
+
+    <p class="print-tip">
+      ✏️ <strong>HOW TO USE:</strong><br>
+      1️⃣ Click on any task text to edit it | 2️⃣ Click ➕ Add task to create custom habits | 3️⃣ Check ☑️ when done | 4️⃣ Choose date to plan different days | 5️⃣ Click 📊 History to see past completions
+    </p>
+  </div>
+
+  <div id="history" class="page">
+    <div style="margin-bottom: 20px;">
+      <h2 style="margin: 0 0 16px; font-size: 20px;">📊 Your Routine History & Analytics</h2>
+      <div id="overview-container"></div>
+    </div>
+
+    <h3 style="margin: 20px 0 12px; font-size: 16px;">Last 30 Days Activity</h3>
+    <div id="history-container" class="history-grid"></div>
+
+    <div id="no-history" class="no-data">
+      <div class="no-data-emoji">📭</div>
+      <p><strong>No history yet!</strong></p>
+      <p style="font-size: 12px;">Complete some tasks and come back to see your progress.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Daily Routine Tracker – Real life habit tracking with history analytics
+</footer>
+
+<script>
+  function getCurrentDateKey() {
+    const inp = document.getElementById("plan-date");
+    if (!inp.value) {
+      const t = new Date();
+      const y = t.getFullYear();
+      const m = String(t.getMonth()+1).padStart(2,"0");
+      const d = String(t.getDate()).padStart(2,"0");
+      return y+"-"+m+"-"+d;
+    }
+    return inp.value;
+  }
+
+  function saveCheckbox(id, checked) {
+    const key = getCurrentDateKey();
+    localStorage.setItem("routine-" + key + "-cb-" + id, checked ? "true" : "false");
+  }
+  function loadCheckbox(id, key) {
+    return localStorage.getItem("routine-" + key + "-cb-" + id) === "true";
+  }
+
+  function saveTitle(id, text) {
+    const key = getCurrentDateKey();
+    localStorage.setItem("routine-" + key + "-title-" + id, text);
+  }
+  function loadTitle(id, key) {
+    const v = localStorage.getItem("routine-" + key + "-title-" + id);
+    return v === null ? "" : v;
+  }
+
+  function updateDayProgress(section) {
+    const day = section.getAttribute("data-day");
+    const checks = section.querySelectorAll('input[type="checkbox"]');
+    const done = Array.from(checks).filter(c => c.checked).length;
+    const total = checks.length || 1;
+    const pct = Math.round(done/total*100);
+
+    const base = day.toLowerCase();
+    const fill = document.getElementById(base+"-fill");
+    const pctEl = document.getElementById(base+"-pct");
+    const count = document.getElementById(base+"-count");
+    if (fill) fill.style.width = pct+"%";
+    if (pctEl) pctEl.textContent = pct + "% complete";
+    if (count) count.textContent = total;
+  }
+
+  function loadForDate(dateKey) {
+    const d = new Date(dateKey);
+    if (!isNaN(d)) {
+      const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const text = days[d.getDay()] + ", " + d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+      document.getElementById("label-morning").textContent = text + " • Morning";
+      document.getElementById("label-afternoon").textContent = text + " • Afternoon";
+      document.getElementById("label-evening").textContent = text + " • Evening";
+      document.getElementById("label-night").textContent = text + " • Night";
+    }
+
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.checked = loadCheckbox(cb.id, dateKey);
+    });
+
+    document.querySelectorAll(".task-title").forEach(title => {
+      const cb = title.closest(".topic")?.querySelector('input[type="checkbox"]');
+      if (!cb) return;
+      const stored = loadTitle(cb.id, dateKey);
+      if (stored) title.textContent = stored;
+    });
+
+    document.querySelectorAll("section.card").forEach(updateDayProgress);
+  }
+
+  function addDynamicTask(day) {
+    const section = document.querySelector('section.card[data-day="'+day+'"]');
+    if (!section) return;
+    const container = section.querySelector('details[open]') || section.querySelector('details');
+    if (!container) return;
+
+    const topic = document.createElement("div");
+    topic.className = "topic";
+    const row = document.createElement("div");
+    row.className = "topic-row";
+
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.id = day[0].toLowerCase() + "-" + Math.floor(Math.random()*100000);
+
+    const label = document.createElement("label");
+    label.className = "topic-label";
+    label.setAttribute("for", cb.id);
+
+    const title = document.createElement("div");
+    title.className = "task-title";
+    title.contentEditable = "true";
+    title.textContent = "Click here to type your custom task";
+
+    const hint = document.createElement("div");
+    hint.className = "hint";
+    hint.textContent = "Example: 30 min meditation, hobby time, etc.";
+
+    label.appendChild(title);
+    label.appendChild(hint);
+
+    const controls = document.createElement("div");
+    controls.className = "topic-controls";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn";
+    deleteBtn.textContent = "🗑️ Delete";
+    deleteBtn.addEventListener("click", () => {
+      topic.remove();
+      updateDayProgress(section);
+    });
+
+    controls.appendChild(deleteBtn);
+
+    row.appendChild(cb);
+    row.appendChild(label);
+    row.appendChild(controls);
+    topic.appendChild(row);
+    container.appendChild(topic);
+
+    cb.addEventListener("change", () => {
+      saveCheckbox(cb.id, cb.checked);
+      updateDayProgress(section);
+    });
+
+    title.addEventListener("input", () => {
+      saveTitle(cb.id, title.textContent.trim());
+    });
+
+    title.addEventListener("blur", () => {
+      if (!title.textContent.trim()) {
+        title.textContent = "Click here to type your custom task";
+      }
+    });
+
+    updateDayProgress(section);
+    title.focus();
+  }
+
+  function updateLiveDateTime() {
+    const main = document.getElementById("datetime-main");
+    const timeEl = document.getElementById("time-text");
+    const now = new Date();
+    const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const dname = days[now.getDay()];
+    const date = now.getDate();
+    const month = months[now.getMonth()];
+    const year = now.getFullYear();
+    const hh = String(now.getHours()).padStart(2,"0");
+    const mm = String(now.getMinutes()).padStart(2,"0");
+    const ss = String(now.getSeconds()).padStart(2,"0");
+    if (main) main.textContent = dname + ", " + date + " " + month + " " + year;
+    if (timeEl) timeEl.textContent = hh + ":" + mm + ":" + ss;
+  }
+
+  function buildHistoryView() {
+    const container = document.getElementById("history-container");
+    const overviewContainer = document.getElementById("overview-container");
+    const noHistoryDiv = document.getElementById("no-history");
+    container.innerHTML = "";
+    overviewContainer.innerHTML = "";
+
+    const allDates = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith("routine-") && key.includes("-cb-")) {
+        const dateMatch = key.match(/routine-(\d{4}-\d{2}-\d{2})-cb-/);
+        if (dateMatch) {
+          const date = dateMatch[1];
+          if (!allDates[date]) allDates[date] = { total: 0, completed: 0 };
+          allDates[date].total++;
+        }
+      }
+    }
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith("routine-") && key.includes("-cb-")) {
+        const dateMatch = key.match(/routine-(\d{4}-\d{2}-\d{2})-cb-/);
+        if (dateMatch && key.endsWith("true")) {
+          const date = dateMatch[1];
+          if (allDates[date]) allDates[date].completed++;
+        }
+      }
+    }
+
+    const sortedDates = Object.keys(allDates).sort().reverse();
+    
+    if (sortedDates.length === 0) {
+      noHistoryDiv.style.display = "block";
+      return;
+    }
+    noHistoryDiv.style.display = "none";
+
+    let totalTasks = 0, totalCompleted = 0, streak = 0;
+    sortedDates.forEach(date => {
+      totalTasks += allDates[date].total;
+      totalCompleted += allDates[date].completed;
+      if (allDates[date].completed > 0) streak++;
+    });
+
+    const overviewHTML = `
+      <div class="overview-stats">
+        <div class="overview-card">
+          <h3>${totalCompleted}</h3>
+          <p>Tasks Completed</p>
+        </div>
+        <div class="overview-card">
+          <h3>${Math.round(totalTasks > 0 ? (totalCompleted/totalTasks)*100 : 0)}%</h3>
+          <p>Completion Rate</p>
+        </div>
+        <div class="overview-card">
+          <h3>${sortedDates.length}</h3>
+          <p>Active Days</p>
+        </div>
+        <div class="overview-card">
+          <h3>${streak}</h3>
+          <p>Day Streak</p>
+        </div>
+      </div>
+    `;
+    overviewContainer.innerHTML = overviewHTML;
+
+    sortedDates.forEach(date => {
+      const d = new Date(date);
+      const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+      const dayName = days[d.getDay()];
+      const dateStr = d.getDate() + " " + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
+      
+      const stats = allDates[date];
+      const pct = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+
+      const card = `
+        <div class="history-card">
+          <div class="history-date">📅 ${dayName}, ${dateStr}</div>
+          <div class="history-stats">
+            <div class="stat-box">
+              <div class="stat-number">${stats.completed}/${stats.total}</div>
+              <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number">${pct}%</div>
+              <div class="stat-label">Done</div>
+            </div>
+          </div>
+          <div style="margin-top: 8px; padding: 8px; background: rgba(34,197,94,0.08); border-radius: 8px; text-align: center; font-size: 24px;">${'⭐'.repeat(Math.ceil(pct/25))}</div>
+        </div>
+      `;
+      container.innerHTML += card;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const inp = document.getElementById("plan-date");
+    const t = new Date();
+    const y = t.getFullYear();
+    const m = String(t.getMonth()+1).padStart(2,"0");
+    const d = String(t.getDate()).padStart(2,"0");
+    const todayKey = y+"-"+m+"-"+d;
+    inp.value = todayKey;
+
+    document.querySelectorAll(".task-title").forEach(title => {
+      title.contentEditable = "true";
+      const cb = title.closest(".topic")?.querySelector('input[type="checkbox"]');
+      if (!cb) return;
+      const stored = loadTitle(cb.id, todayKey);
+      if (stored) title.textContent = stored;
+      title.addEventListener("input", () => {
+        saveTitle(cb.id, title.textContent.trim());
+      });
+    });
+
+    loadForDate(todayKey);
+
+    inp.addEventListener("change", () => {
+      const key = getCurrentDateKey();
+      loadForDate(key);
+    });
+
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener("change", () => {
+        saveCheckbox(cb.id, cb.checked);
+        const section = cb.closest("section.card");
+        if (section) updateDayProgress(section);
+      });
+    });
+
+    document.querySelectorAll(".add-main-btn").forEach(btn => {
+      btn.addEventListener("click", () => addDynamicTask(btn.dataset.add));
+    });
+
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const pageName = btn.dataset.page;
+        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(pageName).classList.add("active");
+        
+        if (pageName === "history") {
+          document.getElementById("date-selector-container").style.display = "none";
+          buildHistoryView();
+        } else {
+          document.getElementById("date-selector-container").style.display = "flex";
+        }
+      });
+    });
+
+    updateLiveDateTime();
+    setInterval(updateLiveDateTime, 1000);
+  });
+</script>
+</body>
+</html>
