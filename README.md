@@ -28,7 +28,6 @@ Each day is divided into structured time blocks:
 - **Evening** – Walks, light activity, family time
 - **Night** – Reading, reflection, wind-down routine
 
-This structure encourages **balance between productivity and well-being**.
 
 ---
 
@@ -39,19 +38,15 @@ This structure encourages **balance between productivity and well-being**.
 - **State Handling:** Client-side logic  
 - **Date & Time:** JavaScript `Date()` API  
 
-*(No backend – lightweight and fast)*
-
----
-
-## 📸 Preview
-
-![Daily Routine Tracker UI](<img width="1869" height="914" alt="Screenshot 2026-01-01 135511" src="https://github.com/user-attachments/assets/a877a516-c018-4e78-8f17-8fce3d0f701b" />
-
-> *(Add the screenshot inside an `assets/` folder and name it `preview.png`)*
-
 ---
 
 ## 🚀 Getting Started
+
+<img width="1869" height="914" alt="Screenshot 2026-01-01 135511" src="https://github.com/user-attachments/assets/a877a516-c018-4e78-8f17-8fce3d0f701b" />
+
+
+---
+
 
 ### 1️⃣ Clone the Repository
 ```bash
